@@ -1,0 +1,3 @@
+/home/qwertilla/Documents/PRP/oop-priprava/date/out/build/date/CMakeFiles/date.dir
+/home/qwertilla/Documents/PRP/oop-priprava/date/out/build/date/CMakeFiles/edit_cache.dir
+/home/qwertilla/Documents/PRP/oop-priprava/date/out/build/date/CMakeFiles/rebuild_cache.dir
