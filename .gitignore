@@ -1,0 +1,59 @@
+# Compiled files
+*.o
+*.obj
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Build directories
+build/
+Build/
+dist/
+bin/
+Debug/
+Release/
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+
+# IDE - Visual Studio
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# IDE - Other
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Dependencies
+*.depend
+*.d
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python cache (if using build scripts)
+__pycache__/
+*.pyc
