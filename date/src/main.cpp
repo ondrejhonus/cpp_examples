@@ -1,6 +1,7 @@
 #include <strings.h>
 
 #include <iostream>
+#include <limits>
 #include <ostream>
 
 #include "date.hpp"
@@ -16,8 +17,8 @@ int main(int, char**) {
   std::cout << "Copying Constructor" << std::endl;
   std::cout << d2 << std::endl;
 
-  std::string choice;
-  do {
+  std::string choice = "y";
+  while (choice == "y" || choice == "Y") {
     Date d3;
     do {
       unsigned int day, mon, y;
@@ -28,6 +29,11 @@ int main(int, char**) {
       std::cin >> mon;
       std::cout << "Year:";
       std::cin >> y;
+      if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        continue;
+      }
       if (d3.set_date(day, mon, y))
         break;
       else
@@ -55,6 +61,6 @@ int main(int, char**) {
 
     std::cout << "Continue? [y/n]: ";
     std::cin >> choice;
-  } while (choice == "y" || choice == "Y");
+  }
   return 0;
 }

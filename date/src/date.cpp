@@ -9,7 +9,7 @@ bool Date::is_date_valid(Dates date) {
     return false;
   } else if (date.month < 1 || date.month > 12) {
     return false;
-  } else if (date.day > days_in_month(date.month, date.year) || date.day <= 0) {
+  } else if (date.day > days_in_month(date.month, date.year) || date.day < 1) {
     return false;
   }
   return true;
@@ -22,14 +22,15 @@ bool Date::is_leap_year(unsigned int year) const {
 
 unsigned int Date::days_in_month(unsigned int month, unsigned int year) const {
   switch (month) {
+    case 2:
+      return is_leap_year(year) ? 29 : 28;
+      break;
     case 4:
     case 6:
     case 9:
     case 11:
       return 30;
       break;
-    case 2:
-      return is_leap_year(year) ? 29 : 28;
     default:
       return 31;
       break;
@@ -37,13 +38,14 @@ unsigned int Date::days_in_month(unsigned int month, unsigned int year) const {
 }
 
 Date::Dates Date::get_system_date() const {
-  Dates system_date;
-  time_t timestamp = time(&timestamp);
-  struct tm datetime = *localtime(&timestamp);
+  time_t timestamp;
+  time(&timestamp);
+  struct tm* datetime = localtime(&timestamp);
 
-  system_date.day = datetime.tm_mday;
-  system_date.month = datetime.tm_mon + 1;
-  system_date.year = datetime.tm_year + 1900;
+  Dates system_date;
+  system_date.day = datetime->tm_mday;
+  system_date.month = datetime->tm_mon + 1;
+  system_date.year = datetime->tm_year + 1900;
 
   return system_date;
 }
@@ -102,86 +104,73 @@ std::ostream& operator<<(std::ostream& os, const Date& date) {
 }
 
 bool Date::set_date(unsigned int day, unsigned int month, unsigned int year) {
-  Dates temp;
-  temp = {day, month, year};
+  Dates temp = {day, month, year};
   if (is_date_valid(temp)) {
-    current_date.day = day;
-    current_date.month = month;
-    current_date.year = year;
+    this->current_date.day = day;
+    this->current_date.month = month;
+    this->current_date.year = year;
     return true;
   }
   return false;
 }
 
 bool Date::set_day(unsigned int day) {
-  Dates temp;
-  temp = {day, current_date.month, current_date.year};
+  Dates temp = {day, current_date.month, current_date.year};
   if (is_date_valid(temp)) {
-    current_date.day = day;
+    this->current_date.day = day;
     return true;
   }
   return false;
 }
 
 bool Date::set_month(unsigned int month) {
-  Dates temp;
-  temp = {current_date.day, month, current_date.year};
+  Dates temp = {current_date.day, month, current_date.year};
   if (is_date_valid(temp)) {
-    current_date.month = month;
+    this->current_date.month = month;
     return true;
   }
   return false;
 }
 
 bool Date::set_year(unsigned int year) {
-  Dates temp;
-  temp.day = current_date.day;
-  temp.month = current_date.month;
-  temp.year = year;
+  Dates temp = {this->current_date.day, this->current_date.month, year};
   if (is_date_valid(temp)) {
-    current_date.year = year;
+    this->current_date.year = year;
     return true;
   }
   return false;
 }
 
 unsigned int Date::date_to_days(Dates date) const {
-  unsigned int days = 0;
+  auto days = 0;
   for (size_t i = min_year; i < date.year; i++) {
-    is_leap_year(i) ? days += 366 : days += 365;
+    days += is_leap_year(i) ? 366 : 365;
   }
   for (size_t i = 1; i < date.month; i++) {
     days += days_in_month(i, date.year);
   }
   days += date.day;
-
   return days;
 }
 
 Date::Dates Date::days_to_date(unsigned int days) const {
-  Dates temp_date = {1, 1, 1970};
-  unsigned int total_days = days - 1;
-
-  while (total_days >= (is_leap_year(temp_date.year) ? 366 : 365)) {
-    if (is_leap_year(temp_date.year)) {
-      temp_date.year++;
-      total_days -= 366;
-    } else {
-      temp_date.year++;
-      total_days -= 365;
-    }
+  Dates temp = {1, 1, 1970};
+  auto total_days = days - 1;
+  while (total_days >= is_leap_year(temp.year) ? 366 : 365) {
+    total_days -= is_leap_year(temp.year) ? 366 : 365;
+    temp.year++;
   }
-  while (total_days >= days_in_month(temp_date.month, temp_date.year)) {
-    total_days -= days_in_month(temp_date.month, temp_date.year);
-    temp_date.month++;
+  while (total_days >= days_in_month(temp.month, temp.year)) {
+    total_days -= days_in_month(temp.month, temp.year);
+    temp.month++;
   }
-
-  temp_date.day += total_days;
-  return temp_date;
+  temp.day = total_days;
+  return temp;
 }
 
 void Date::add_days_to_date(unsigned int days_to_add) {
-  current_date = days_to_date(date_to_days(current_date) + days_to_add);
+  this->current_date =
+      days_to_date(date_to_days(this->current_date) + days_to_add);
 }
 
 bool Date::set_days_from_epoch_day(unsigned int days_to_add) {
@@ -192,17 +181,17 @@ bool Date::set_days_from_epoch_day(unsigned int days_to_add) {
 
 unsigned int Date::days_since_epoch() const {
   Dates epoch = {1, 1, 1970};
-  return (date_to_days(this->current_date) - date_to_days(epoch));
+  return date_to_days(this->current_date) - date_to_days(epoch);
 }
 
 unsigned int Date::weekday_order() const {
-  unsigned int epoch_day = 4;
-  unsigned int offset = days_since_epoch() % 7;  // thursday
-  if (offset <= 3) {
-    return offset + 3;
-  } else {
-    return offset - 4;
-  }
+  const unsigned int epoch = 3;  // thursday = [3]
+  const unsigned int offset = days_since_epoch() % 7;
+
+  if (offset <= 3)
+    return epoch + offset;
+  else
+    return offset - epoch - 1;
 }
 
 Date& Date::operator=(const Date& date) {

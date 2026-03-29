@@ -20,12 +20,13 @@ int Person::get_age() const {
   int birth_day = std::stoi(this->security_num.substr(4, 2));
 
   int birth_year = (raw_year < 54) ? raw_year + 100 : raw_year;
-  int birth_month = (raw_month > 50) ? raw_month - 50 : raw_month;
+  int birth_month =
+      (raw_month > 50) ? raw_month - 50 - 1 : raw_month - 1;  // - 1 for index
 
   int age = now->tm_year - birth_year;
 
-  if (now->tm_mon + 1 < birth_month ||
-      (now->tm_mon + 1 == birth_month && now->tm_mday < birth_day)) {
+  if (now->tm_mon < birth_month ||
+      (now->tm_mon == birth_month && now->tm_mday < birth_day)) {
     age--;
   }
 
@@ -63,7 +64,7 @@ bool Person::is_security_num_valid(std::string sn) const {
   for (char c : sn) {
     if (!std::isdigit(c)) return false;
   }
-  if (std::stoll(sn.substr(2, 2)) > 62) return false;
+  if (std::stoi(sn.substr(2, 2)) > 62) return false;
 
   int first_nine = std::stoi(sn.substr(0, 9));
   int last = std::stoi(sn.substr(9, 1));

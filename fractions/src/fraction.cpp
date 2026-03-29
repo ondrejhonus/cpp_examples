@@ -12,6 +12,7 @@ fraction::fraction(int numerator, int denominator) {
   set_numerator(numerator);
   if (!set_denominator(denominator)) {
     set_denominator(1);
+    set_numerator(1);
   }
 }
 
@@ -70,11 +71,17 @@ fraction& fraction::operator=(const fraction& frac) {
 fraction fraction::operator+(const fraction& frac) const {
   fraction new_frac;
   new_frac.numerator =
-      this->numerator * frac.denom + frac.numerator * this->denom;
-
+      frac.numerator * this->denom + frac.denom * this->numerator;
   new_frac.denom = this->denom * frac.denom;
   new_frac.shorten_frac();
   return new_frac;
 }
 
-int fraction::gcd(int a, int b) { return std::gcd(a, b); }
+int fraction::gcd(int a, int b) {
+  int gcd = a * b;
+  while (gcd > 1) {
+    if (a % gcd == 0 && b % gcd == 0) break;
+    gcd--;
+  }
+  return gcd;
+}
