@@ -11,8 +11,9 @@ Person::Person(std::string sec_num) {
 std::string Person::get_security_num() const { return this->security_num; }
 
 int Person::get_age() const {
-  time_t now = time(nullptr);
-  struct tm* local = localtime(&now);
+  time_t timer;
+  time(&timer);
+  struct tm* now = localtime(&timer);
 
   int raw_year = std::stoi(this->security_num.substr(0, 2));
   int raw_month = std::stoi(this->security_num.substr(2, 2));
@@ -21,10 +22,10 @@ int Person::get_age() const {
   int birth_year = (raw_year < 54) ? raw_year + 100 : raw_year;
   int birth_month = (raw_month > 50) ? raw_month - 50 : raw_month;
 
-  int age = local->tm_year - birth_year;
+  int age = now->tm_year - birth_year;
 
-  if (local->tm_mon + 1 < birth_month ||
-      (local->tm_mon + 1 == birth_month && local->tm_mday < birth_day)) {
+  if (now->tm_mon + 1 < birth_month ||
+      (now->tm_mon + 1 == birth_month && now->tm_mday < birth_day)) {
     age--;
   }
 
