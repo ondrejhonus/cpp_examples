@@ -5,7 +5,7 @@
 #include <iostream>
 
 bool Date::is_date_valid(Dates date) {
-  if (date.year < min_year || date.year > max_year) {
+  if (date.year < MIN_YEAR || date.year > MAX_YEAR) {
     return false;
   } else if (date.month < 1 || date.month > 12) {
     return false;
@@ -143,7 +143,7 @@ bool Date::set_year(unsigned int year) {
 
 unsigned int Date::date_to_days(Dates date) const {
   auto days = 0;
-  for (size_t i = min_year; i < date.year; i++) {
+  for (size_t i = MIN_YEAR; i < date.year; i++) {
     days += is_leap_year(i) ? 366 : 365;
   }
   for (size_t i = 1; i < date.month; i++) {

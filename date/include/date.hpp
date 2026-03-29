@@ -16,8 +16,8 @@ class Date {
   Dates get_system_date() const;
   unsigned int date_to_days(Dates date) const;
 
-  static const int max_year = 2050;
-  static const int min_year = 1970;
+  static const int MAX_YEAR = 2050;
+  static const int MIN_YEAR = 1970;
 
  public:
   Date();
